@@ -1,0 +1,44 @@
+INCLUDE PCMAC.INC
+.MODEL small
+.STACK 100h
+.DATA
+M1  DB "Factorial of $" ; use putdec and getdec files
+M2  DB " is $"
+i   DW 5
+
+.CODE
+EXTRN GetDec: NEAR, PutDec: NEAR ;FactPro: NEAR
+START:
+    mov AX,@data
+    mov DS,AX
+
+    push i
+    call FactPro
+    mov BX,AX
+    _PutStr M1
+    mov AX,i
+    call PutDec
+    _PutStr M2      ;also can use _putch 'i','s',' '
+    mov ax,bx
+    call PutDec
+
+FactPro proc
+    push BP
+    mov BP, SP
+    mov ax, word ptr[BP+2]
+    cmp BX, 1
+    jle done
+    sub bx,1
+    push ax
+    call FactPro
+
+done:   imul word ptr[BP+6]
+    pop BP
+    ret 4
+FactPro ENDP
+
+mov ah,4ch
+int 21h
+
+END START
+END
